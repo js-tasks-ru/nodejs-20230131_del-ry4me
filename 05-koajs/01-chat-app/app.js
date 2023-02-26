@@ -18,6 +18,9 @@ router.get('/subscribe', async (ctx, next) => {
     const response = await promise;
 
     for (id in subscribers) {
+        if (response == '') {
+            return;
+        }
         ctx.body = response;
     }
     subscribers = Object.create(null);
