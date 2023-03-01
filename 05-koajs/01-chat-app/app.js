@@ -9,39 +9,24 @@ const Router = require('koa-router');
 const { result } = require('lodash');
 const router = new Router();
 
-/**let subscribers = Object.create(null);
-
-
-router.get('/subscribe', async (ctx, next) => {
-    await promise;
-    let resp = promise;
-    ctx.body = resp;
-
-});
-
-let promise = new Promise((resolve) => {router.post('/publish', async (ctx, next) => {
-    let message = ctx.request.body.message;
-    resolve(message);
-    });
-})
-*/
 const clients = new Set();
+
 router.get('/subscribe', async (ctx, next) => {
     const message = await new Promise((resolve, reject) => {
-      clients.add(resolve);
-  
-      ctx.res.on('close', function() {
-        clients.delete(resolve);
-        resolve();
+        clients.add(resolve);
+    
+        ctx.res.on('close', function() {
+          clients.delete(resolve);
+          resolve();
+        });
       });
-    });
-  
-    ctx.body = message;
-  });
+    
+      ctx.body = message;
+});
 
-  router.post('/publish', async (ctx, next) => {
+router.post('/publish', async (ctx, next) => {
     const message = ctx.request.body.message;
-  
+
     if (!message) {
       ctx.throw(400, 'required field `message` is missing');
     }
@@ -53,7 +38,7 @@ router.get('/subscribe', async (ctx, next) => {
     clients.clear();
   
     ctx.body = 'ok';
-  });
+});
 
 app.use(router.routes());
 
