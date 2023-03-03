@@ -8,30 +8,35 @@ app.use(require('koa-bodyparser')());
 const Router = require('koa-router');
 const router = new Router();
 
-let subscribers = Object.create(null);
-
+const clients = new Set();
 
 router.get('/subscribe', async (ctx, next) => {
-    let id = ctx.query.r;
-    subscribers[id] = ctx;
+  const message = await new Promise((resolve, reject) => {
+    clients.add(resolve);
 
-    const response = await promise;
+    ctx.res.on('close', function() {
+      clients.delete(resolve);
+      resolve();
+    });
+  });
 
-    for (id in subscribers) {
-        if (response == '') {
-            return;
-        }
-        ctx.body = response;
-    }
-    subscribers = Object.create(null);
-
-
+  ctx.body = message;
 });
 
-let promise = new Promise((resolve) => {router.post('/publish', async (ctx, next) => {
-        const message = ctx.request.body.message;
-        resolve(message);
-});
+router.post('/publish', async (ctx, next) => {
+  const message = ctx.request.body.message;
+
+  if (!message) {
+    ctx.throw(400, 'required field `message` is missing');
+  }
+
+  clients.forEach(function(resolve) {
+    resolve(message);
+  });
+
+  clients.clear();
+
+  ctx.body = 'ok';
 });
 
 app.use(router.routes());
