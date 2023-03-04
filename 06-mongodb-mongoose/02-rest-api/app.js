@@ -2,6 +2,9 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const {productsBySubcategory, productList, productById} = require('./controllers/products');
 const {categoryList} = require('./controllers/categories');
+const Category = require('./models/Category');
+const Product = require('./models/Product');
+
 
 const app = new Koa();
 
