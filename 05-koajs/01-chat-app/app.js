@@ -27,17 +27,18 @@ router.get('/subscribe', async (ctx, next) => {
 router.post('/publish', async (ctx, next) => {
     const message = ctx.request.body.message;
 
-    if (!message) {
-      ctx.throw(400, 'required field `message` is missing');
-    }
-  
-    clients.forEach(resolve => {
-      resolve(message);
-    });
-  
-    clients.clear();
-  
-    ctx.body = 'ok';
+  if (!message) {
+    ctx.throw(400, 'required field `message` is missing');
+  }
+
+  clients.forEach(function(resolve) {
+    resolve(message);
+  });
+
+  clients.clear();
+
+  ctx.body = 'ok';
+>>>>>>>>> Temporary merge branch 2
 });
 
 app.use(router.routes());
