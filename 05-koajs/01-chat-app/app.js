@@ -38,7 +38,7 @@ router.post('/publish', async (ctx, next) => {
   clients.clear();
 
   ctx.body = 'ok';
->>>>>>>>> Temporary merge branch 2
+
 });
 
 app.use(router.routes());

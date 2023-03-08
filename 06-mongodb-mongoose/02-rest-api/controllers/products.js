@@ -6,7 +6,7 @@ module.exports.productsBySubcategory = async function productsBySubcategory(ctx,
   const {subcategory} = ctx.query;
 
   if (!subcategory) return next();
-  const sub = await Product.find({_id: subcategory});
+  const sub = await Product.find({subcategory});
   sub.forEach((el) => {
     el = product(el);
   })
