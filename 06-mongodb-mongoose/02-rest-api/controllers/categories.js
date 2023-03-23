@@ -1,11 +1,8 @@
 const { forEach } = require('lodash');
-const {category} = require('../mappers/category');
+const mapCategory = require('../mappers/category');
 const Category = require('../models/Category');
 
 module.exports.categoryList = async function categoryList(ctx, next) {
-  const query = await Category.find();
-  query.forEach((item) => {
-    item = category(item);
-  })
-  ctx.body = {categories: query};
+  const categories = await Category.find();
+  ctx.body = {categories: categories.map(mapCategory)};
 };

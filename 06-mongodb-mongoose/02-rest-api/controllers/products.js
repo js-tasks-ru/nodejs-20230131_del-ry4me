@@ -1,24 +1,20 @@
 const { default: mongoose } = require("mongoose");
-const {product} = require("../mappers/product");
+const mapProduct = require("../mappers/product");
 const Product = require('../models/Product');
 
 module.exports.productsBySubcategory = async function productsBySubcategory(ctx, next) {
   const {subcategory} = ctx.query;
 
   if (!subcategory) return next();
-  const sub = await Product.find({subcategory});
-  sub.forEach((el) => {
-    el = product(el);
-  })
-  ctx.body = {products: sub};
+  
+  const products = await Product.find({subcategory: subcategory}).limit(20);
+  ctx.body = {products: products.map(mapProduct)};
 };
 
 module.exports.productList = async function productList(ctx, next) {
-  const p = await Product.find();
-  p.forEach((element) => {
-    element = product(element);
-  });
-  ctx.body = {products: p};
+
+  const products = await Product.find();
+  ctx.body = {products: products.map(mapProduct)};
 };
 
 module.exports.productById = async function productById(ctx, next) {
@@ -30,6 +26,7 @@ module.exports.productById = async function productById(ctx, next) {
     ctx.throw(404, 'not found');
   }
 
-  ctx.body = {product: product(p)};
+  ctx.body = {product: mapProduct(p)};
 };
+
 

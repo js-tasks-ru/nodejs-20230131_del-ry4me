@@ -4,45 +4,43 @@ const sendMail = require('../libs/sendMail');
 
 module.exports.register = async (ctx, next) => {
     if (!!(await User.findOne({email: ctx.request.body.email}))) {
-        ctx.status = 400;
-        ctx.body = {errors: {error: "Такой email существует"}};
+        ctx.throw(400, "Такой email существует");
     }
 
-    const id = uuid();
-    const user = await User.create([{email: ctx.request.body.email},
-{displayName: ctx.request.body.displayName}, {veryficationToken: id}]);
+    const verificationToken = uuid();
+    const user = await User.create({email: ctx.request.body.email,
+    displayName: ctx.request.body.displayName, veryficationToken: verificationToken});
      // Что возвращает валидатор при ошибке?
-    if (!user.email) {
+    /**if (!user.email) {
         ctx.status = 400;
         ctx.body = {errors: {error: "Невалидный email"}}
-    }
+    }*/
 
-    user.generateSalt();
-    user.setPassword(ctx.request.body.password);
+  await user.setPassword(ctx.request.body.password);
+  await user.save();
 
-    await sendMail({
+  await sendMail({
                 template: 'confirmation',
-                locals: {token: id},
-                to: 'user@mail.com',
+                locals: {token: verificationToken},
+                to: user.email,
                 subject: 'Подтвердите почту',
                 });
 
-    return next();
-
+  ctx.body = {status: 'ok'};
 };
 // При переходе на "confirm" разве не get запрос делается?
 module.exports.confirm = async (ctx, next) => {
-    const user = await User.findOne({token: ctx.request.body.token});
+    const user = await User.findOne({verificationToken: ctx.request.body.verificationToken});
     if (!user) {
-        ctx.status = 400;
-        ctx.body = {rerrors: {error: 'Ссылка подтверждения недействительна или устарела'}};
+        ctx.throw(400, 'Ссылка подтверждения недействительна или устарела');
     }
-    const session = uuid(); //Что дальше?
-    delete user.verificationToken;
-    user.updateOne();
+  user.verificationToken = undefined;
+  await user.save();
 
+  const token = uuid();
 
-    return next();
+  ctx.body = {token};
 
 };
+
 

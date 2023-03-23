@@ -33,8 +33,7 @@ app.use(async (ctx, next) => {
 app.use((ctx, next) => {
   ctx.login = async function(user) {
     const token = uuid();
-    const now = new Date;
-    const session = await Session.create({user: user._id, LastVisit: now, token: token});
+    await Session.create({user, token, LastVisit: new Date});
 
     return token;
   };
@@ -51,16 +50,18 @@ router.use(async (ctx, next) => {
   if (!token) {
     return next();
   }
- const session = await Session.findOne({token: 'token'}).populate('user');
+ const session = await Session.findOne({token}).populate('user');
  if (!session) {
-  ctx.status = 401;
-  ctx.body = {error: 'Неверный аутентификационный номер'};
+  ctx.throw(401, 'Неверный аутентификационный номер');
  }
  session.lastVisit = new Date;
+ await session.save();
+
  ctx.user = session.user;
 
   return next();
 });
+
 
 router.post('/login', login);
 

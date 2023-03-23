@@ -1,7 +1,7 @@
 const User = require('../../models/User');
 
-module.exports = function authenticate(strategy, email, displayName, done) {
-  if (!email) {
+module.exports = async function authenticate(strategy, email, displayName, done) {
+ /**  if (!email) {
     return done(null, false, 'Не указан email');
   }
   const user = User.findOne({email}, function(err, user) {
@@ -13,8 +13,28 @@ module.exports = function authenticate(strategy, email, displayName, done) {
     }
   });
   if (!user) {
-    user = User.create({email, displayName,});
-    return (null, user);
+    User.create({email, displayName,});
+    done(null, user);
   }
+  */
+  if (!email) {
+    return done(null, false, 'Не указан email');
+  }
+
+  try {
+    let user = await User.findOne({email});
+
+    if (user) {
+      return done(null, user);
+    }
+
+    user = await User.create({
+      email, displayName,
+    });
+    done(null, user);
+  } catch (err) {
+    done(err);
+  }
+  
   //done(null, false, `функция аутентификации с помощью ${strategy} не настроена`);
 };
