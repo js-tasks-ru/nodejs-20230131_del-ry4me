@@ -32,7 +32,7 @@ app.use(async (ctx, next) => {
 app.use((ctx, next) => {
   ctx.login = async function(user) {
     const token = uuid();
-    await Session.create({token, user, LastVisit: new Date});
+    await Session.create({token, user, lastVisit: new Date});
 
     return token;
   };

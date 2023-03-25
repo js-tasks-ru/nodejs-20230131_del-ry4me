@@ -4,7 +4,9 @@ const Session = require('../models/Session');
 
 module.exports.messageList = async function messages(ctx, next) {
    const header = ctx.request.get('Authorization');
-   if (!header) return next();
+   if (!header)
+   ctx.throw(401, 'Требуется аутентификация');
+   return next();
 
   const token = header.split(' ')[1];
   if (!token) return next();

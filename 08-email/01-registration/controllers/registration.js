@@ -5,12 +5,12 @@ const sendMail = require('../libs/sendMail');
 module.exports.register = async (ctx, next) => {
     if (!!(await User.findOne({email: ctx.request.body.email}))) {
         ctx.status = 400;
-      ctx.body({errors: {error: "Такой email уже существует"}});
+        ctx.body = {errors: {error: "Такой email уже существует"}};
     }
 
     const verificationToken = uuid();
     const user = await User.create({email: ctx.request.body.email,
-    displayName: ctx.request.body.displayName, veryficationToken,});
+    displayName: ctx.request.body.displayName, verificationToken,});
      // Что возвращает валидатор при ошибке?
     /**if (!user.email) {
         ctx.status = 400;
@@ -41,7 +41,6 @@ module.exports.confirm = async (ctx, next) => {
   const token = uuid();
 
   ctx.body = {token};
-
 };
 
 
