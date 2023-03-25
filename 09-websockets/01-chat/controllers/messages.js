@@ -15,6 +15,7 @@ module.exports.messageList = async function messages(ctx, next) {
   console.log(token);
   if (!session) {
     ctx.throw(401, 'Неверный аутентификационный токен');
+    return next();
   }
   const chatID = session.user._id;
   console.log(chatID);
