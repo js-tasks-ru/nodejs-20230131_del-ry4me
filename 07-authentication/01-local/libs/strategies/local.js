@@ -5,19 +5,19 @@ module.exports = new LocalStrategy(
     {usernameField: 'email', session: false},
     
 
-    /** async function(email, password, done) {
+    async function(email, password, done) {
       const user = await User.findOne({email: email});
 
       if (!user) {
         done(null, false, 'Нет такого пользователя');
       }
 
-      user.checkPassword(password) ? done(null, user) : done(null, false, 'Неверный пароль');
+      await user.checkPassword(password) ? done(null, user) : done(null, false, 'Неверный пароль');
 
-      done(null, false, 'Стратегия подключена, но еще не настроена');
+      //done(null, false, 'Стратегия подключена, но еще не настроена');
     },
-    */
-    function(email, password, done) {
+    
+   /**  function(email, password, done) {
 
     User.findOne({email}, function(err, user) {
       if (err) {
@@ -30,4 +30,6 @@ module.exports = new LocalStrategy(
       return done(null, user);
     });
    }
+   */
 );
+

@@ -29,11 +29,10 @@ app.use(async (ctx, next) => {
   }
 });
 
-
 app.use((ctx, next) => {
   ctx.login = async function(user) {
     const token = uuid();
-    await Session.create({user, token, LastVisit: new Date});
+    await Session.create({token, user, LastVisit: new Date});
 
     return token;
   };
@@ -52,7 +51,7 @@ router.use(async (ctx, next) => {
   }
  const session = await Session.findOne({token}).populate('user');
  if (!session) {
-  ctx.throw(401, 'Неверный аутентификационный номер');
+  ctx.throw(401, 'Неверный аутентификационный токен');
  }
  session.lastVisit = new Date;
  await session.save();
