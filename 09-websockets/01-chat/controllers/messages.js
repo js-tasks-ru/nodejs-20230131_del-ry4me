@@ -4,10 +4,7 @@ const Session = require('../models/Session');
 
 module.exports.messageList = async function messages(ctx, next) {
    ctx.body = {};
-  /* const header = ctx.request.get('Authorization');
-   if (!header)
-   ctx.throw(401, 'Пользователь не залогинен');
-   return next();
+   const header = ctx.request.get('Authorization');
 
   const token = header.split(' ')[1];
   if (!token) return next();
@@ -20,7 +17,7 @@ module.exports.messageList = async function messages(ctx, next) {
   }
   const chatID = session.user._id;
   console.log(chatID);
-  */
+  
   let messages = await Message.find({chat: chatID}).limit(20);
   messages = messages.map((message) => {
     return {
